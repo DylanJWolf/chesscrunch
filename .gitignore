@@ -1,2 +1,7 @@
+session.json
+.venv/
+*.pyc
+__pycache__/
+.DS_Store
 database_generator.py
 lichess_db_puzzle.
