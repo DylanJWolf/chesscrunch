@@ -3,20 +3,42 @@
 # Creates an image of the puzzle and posts it to Instagram
 ########################################################################################################################
 import csv
-from instagrapi import Client, exceptions
+import sys
+import os
 import logging
+import getpass
 import puzzle_gen
-import argparse
 
-# Create the argument parser
-parser = argparse.ArgumentParser(description='Description of your script')
-parser.add_argument('-u', '--username', type=str, help='Username')
-parser.add_argument('-p', '--password', type=str, help='Password')
-args = parser.parse_args()
+# instagrapi uses modern Python typing (PEP 604 `X | None`) which requires Python 3.10+
+# Fail early with a helpful message rather than raising a confusing TypeError during import.
+if sys.version_info < (3, 10):
+    sys.exit(
+        "automate.py requires Python 3.10+ because `instagrapi` uses modern typing syntax. "
+        "Please recreate your virtualenv with Python 3.10 or later, or omit `instagrapi` installation."
+    )
 
-USERNAME = args.username
-PASSWORD = args.password
-CURR_SESSION = "session.json"
+# Optional: load environment variables from a .env file if python-dotenv is available
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except Exception:
+    # dotenv is optional; we'll fall back to reading real environment variables
+    pass
+
+from instagrapi import Client, exceptions
+
+CURR_SESSION = os.getenv('SESSION_FILE', 'session.json')
+
+# Credentials: prefer environment variables `INSTA_USER` and `INSTA_PASS` (or a .env file).
+USERNAME = os.getenv('INSTA_USER')
+PASSWORD = os.getenv('INSTA_PASS')
+
+# If either is missing, prompt (password prompt uses getpass so it won't echo).
+if not USERNAME:
+    USERNAME = input("Instagram username: ")
+if not PASSWORD:
+    PASSWORD = getpass.getpass("Instagram password (will not be echoed): ")
+
 cl = Client()
 
 HASHTAGS = "#Chess #ChessGame #ChessBoard #ChessPlayer #ChessMaster #ChessTournament #ChessPost #ChessMemes " \
@@ -135,4 +157,5 @@ def run_bot():
             print("Instagram terminated our session.")
 
 
-run_bot()
+if __name__ == "__main__":
+    run_bot()
