@@ -2,4 +2,3 @@ pillow
 python-chess
 # Optional: include if you plan to automate uploads to Instagram
 instagrapi
-python-dotenv

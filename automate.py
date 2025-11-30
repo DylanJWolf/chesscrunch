@@ -4,10 +4,9 @@
 ########################################################################################################################
 import csv
 import sys
-import os
 import logging
-import getpass
 import puzzle_gen
+import argparse
 
 # instagrapi uses modern Python typing (PEP 604 `X | None`) which requires Python 3.10+
 # Fail early with a helpful message rather than raising a confusing TypeError during import.
@@ -17,28 +16,18 @@ if sys.version_info < (3, 10):
         "Please recreate your virtualenv with Python 3.10 or later, or omit `instagrapi` installation."
     )
 
-# Optional: load environment variables from a .env file if python-dotenv is available
-try:
-    from dotenv import load_dotenv
-    load_dotenv()
-except Exception:
-    # dotenv is optional; we'll fall back to reading real environment variables
-    pass
-
 from instagrapi import Client, exceptions
 
-CURR_SESSION = os.getenv('SESSION_FILE', 'session.json')
+CURR_SESSION = "session.json"
 
-# Credentials: prefer environment variables `INSTA_USER` and `INSTA_PASS` (or a .env file).
-USERNAME = os.getenv('INSTA_USER')
-PASSWORD = os.getenv('INSTA_PASS')
+# Create the argument parser
+parser = argparse.ArgumentParser(description='Description of your script')
+parser.add_argument('-u', '--username', type=str, help='Username')
+parser.add_argument('-p', '--password', type=str, help='Password')
+args = parser.parse_args()
 
-# If either is missing, prompt (password prompt uses getpass so it won't echo).
-if not USERNAME:
-    USERNAME = input("Instagram username: ")
-if not PASSWORD:
-    PASSWORD = getpass.getpass("Instagram password (will not be echoed): ")
-
+USERNAME = args.username
+PASSWORD = args.password
 cl = Client()
 
 HASHTAGS = "#Chess #ChessGame #ChessBoard #ChessPlayer #ChessMaster #ChessTournament #ChessPost #ChessMemes " \
