@@ -3,10 +3,22 @@
 # Creates an image of the puzzle and posts it to Instagram
 ########################################################################################################################
 import csv
-from instagrapi import Client, exceptions
+import sys
 import logging
 import puzzle_gen
 import argparse
+
+# instagrapi uses modern Python typing (PEP 604 `X | None`) which requires Python 3.10+
+# Fail early with a helpful message rather than raising a confusing TypeError during import.
+if sys.version_info < (3, 10):
+    sys.exit(
+        "automate.py requires Python 3.10+ because `instagrapi` uses modern typing syntax. "
+        "Please recreate your virtualenv with Python 3.10 or later, or omit `instagrapi` installation."
+    )
+
+from instagrapi import Client, exceptions
+
+CURR_SESSION = "session.json"
 
 # Create the argument parser
 parser = argparse.ArgumentParser(description='Description of your script')
@@ -16,7 +28,6 @@ args = parser.parse_args()
 
 USERNAME = args.username
 PASSWORD = args.password
-CURR_SESSION = "session.json"
 cl = Client()
 
 HASHTAGS = "#Chess #ChessGame #ChessBoard #ChessPlayer #ChessMaster #ChessTournament #ChessPost #ChessMemes " \
@@ -135,4 +146,5 @@ def run_bot():
             print("Instagram terminated our session.")
 
 
-run_bot()
+if __name__ == "__main__":
+    run_bot()

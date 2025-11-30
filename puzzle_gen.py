@@ -2,6 +2,7 @@
 # Used for testing the puzzle generator functionality. Does not deal with Instagrapi
 ########################################################################################################################
 import csv
+import os
 from PIL import Image
 import chess
 
@@ -54,6 +55,9 @@ def generate_slides():
         theme = themes[int(file.read())]
     with open('Pieces/piece_index.txt', mode="r") as file:
         piece_set = piece_sets[int(file.read())]
+
+    # Ensure the output directory exists
+    os.makedirs('Slides', exist_ok=True)
 
     whites_move = 'w' not in puzzle[1]  # Lichess starts the puzzles a move early
     board = chess.Board(fen)
@@ -116,3 +120,8 @@ def generate_slides():
         board_img = board_img.convert('RGB')
         img_path = 'Slides/Slide' + str(m) + ".jpg"
         board_img.save(img_path)
+        print("Saved", img_path)
+
+if __name__ == "__main__":
+    load_puzzles()
+    generate_slides()
